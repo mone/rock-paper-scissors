@@ -2,14 +2,28 @@ import mill._
 import mill.scalalib._
 
 // scalastyle:off
-object core extends ScalaModule {
+object testutil extends ScalaModule {
+  def scalaVersion = "2.12.4"
+
+  override def ivyDeps = Agg(
+    ivy"org.scalatest::scalatest:3.0.5",
+    ivy"org.scalacheck::scalacheck:1.13.4",
+    ivy"org.mockito:mockito-core:2.16.0"
+  )
+}
+
+trait CommonModuleDefinition extends ScalaModule {
   def scalaVersion = "2.12.4"
 
   object test extends Tests {
-    override def ivyDeps = Agg(
-      ivy"org.scalatest::scalatest:3.0.5",
-      ivy"org.scalacheck::scalacheck:1.13.4"
-    )
+    override def moduleDeps = super.moduleDeps ++ Seq(testutil)
+
     def testFrameworks = Seq("org.scalatest.tools.Framework")
   }
+}
+
+object core extends CommonModuleDefinition
+
+object cli extends CommonModuleDefinition {
+  override def moduleDeps = Seq(core)
 }
